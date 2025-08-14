@@ -2,7 +2,7 @@
 
 
 #Neste código é feito um cálculo de probabilidade de uma coleta imaginária de minerio de ferro
-1 
+
 
 
 import random
