@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Personagem</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .section {
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #FFFFFF;
+            color: #000000;
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.2);
+        }
+        .header {
+            color: #FFD700;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .flex-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .character, .weapon {
+            width: 264px;
+            height: 264px;
+            background-color: #808080;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .character img, .weapon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .info-box {
+            border: 1px solid #FFD700;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #FFF8E1;
+        }
+        .mini-button {
+            background-color: #FFD700;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .mini-button:hover {
+            background-color: #DAA520;
+        }
+        .history {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #FFF8E1;
+            border: 1px solid #FFD700;
+            border-radius: 10px;
+            text-align: left;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+        }
+        li {
+            margin: 5px 0;
+        }
+        /* Acessibilidade */
+        * {
+            font-size: 16px;
+        }
+        a, button {
+            outline: none;
+        }
+        button:focus {
+            outline: 2px solid #FFD700;
+        }
+        .character, .weapon {
+            position: relative;
+        }
+        .character::after, .weapon::after {
+            content: attr(aria-label);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.1);
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Seção Personagem -->
+        <div class="section" id="personagem-section">
+            <h2 class="header">Rd</h2>
+            <div class="character" role="img" aria-label="Imagem do personagem Rd, com aparência fofa mas aura aterrorizante">
+                <img src= kessyel.png alt="Imagem do personagem Rd">
+            </div>
+            <button class="mini-button" onclick="toggleCharacterHistory()" aria-controls="character-history" aria-expanded="false">Mostrar História do Personagem</button>
+            <div id="character-history" class="history">
+                <h3>História do Personagem</h3>
+                <p>Rd, outrora conhecido como Kessyel, é um Seraphin expulso do reino celestial após eliminar todos os membros de sua casa, uma das sete casas reais de Douberian, detentoras de um poder imenso. Sua aparência fofa esconde uma aura aterrorizante e uma presença assustadora. Devido à perda de memórias, ele não se recorda de seu passado glorioso, vagando agora como um aventureiro em busca de respostas.</p>
+            </div>
+        </div>
+
+        <!-- Seção Classe -->
+        <div class="section" id="classe-section">
+            <h2 class="header">Classe</h2>
+            <div class="info-box">
+                <p><strong>Vida:</strong> 35</p>
+                <p><strong>Moeda:</strong> 15</p>
+                <p><strong>Classes:</strong> Nível 3 de Mercador, 2 Artificer, 1 de Mago</p>
+                <p><strong>Nível Total:</strong> 6</p>
+            </div>
+        </div>
+
+        <!-- Seção Arma -->
+        <div class="section" id="arma-section">
+            <h2 class="header">Arma</h2>
+            <div class="weapon" role="img" aria-label="Imagem da arma Chicote de Afrodite">
+                <img src= chicote.png alt="Imagem da arma Chicote de Afrodite">
+            </div>
+            <div class="info-box">
+                <p><strong>Nome:</strong> Chicote de Afrodite</p>
+            </div>
+            <button class="mini-button" onclick="toggleWeaponHistory()" aria-controls="weapon-history" aria-expanded="false">Mostrar História da Arma</button>
+            <div id="weapon-history" class="history">
+                <h3>História da Arma</h3>
+                <p>O Chicote de Afrodite é uma arma lendária forjada pela deusa Afrodite no coração do submundo. Imbuído com essência divina e um toque de caos infernal, o chicote pode assumir qualquer forma desejada pelo portador, desde uma lâmina afiada até correntes flamejantes. Criada para punir traidores e aqueles que desafiam o amor, sua energia é tão bela quanto mortal, capaz de devastar inimigos com uma força sinistramente poderosa.</p>
+            </div>
+        </div>
+
+        <!-- Seções Ataques e Habilidades -->
+        <div class="flex-row">
+            <div class="section" style="width: 48%;">
+                <h2 class="header">Ataques</h2>
+                <ul>
+                    <li>A - 16 de dano</li>
+                    <li>2 - 16 de dano</li>
+                    <li>3 - 16 de dano</li>
+                    <li>4 - 7 de dano</li>
+                    <li>5 - 7 de dano</li>
+                    <li>6 - 7 de dano</li>
+                    <li>7 - 7 de dano</li>
+                    <li>8 - Recupera 4 HP</li>
+                    <li>9 - 6 de dano</li>
+                    <li>10 - 6 de dano</li>
+                    <li>K - Não definido</li>
+                    <li>Q - Sexto Sentido: Revela a próxima carta, permitindo mantê-la ou descartá-la e puxar uma nova carta</li>
+                    <li>J - Não definido</li>
+                </ul>
+            </div>
+            <div class="section" style="width: 48%;">
+                <h2 class="header">Habilidades</h2>
+                <div class="info-box">
+                    <p><strong>Chicote de Afrodite:</strong></p>
+                    <p><strong>Fúria:</strong> Quando a vida estiver na metade, os ataques 4 a 7 causam o dobro de dano, com o dano final sendo subtraído pelo dano da carta do inimigo.</p>
+                    <p><strong>Recuperação:</strong> Carta 8 recupera 4 de vida/HP.</p>
+                    <p><strong>Tridente:</strong> Permite redirecionar dano recebido para um aliado escolhido.</p>
+                    <p><strong>Sexto Sentido:</strong> Revela a próxima carta, permitindo mantê-la ou descartá-la e puxar uma nova carta.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCharacterHistory() {
+            var historyDiv = document.getElementById('character-history');
+            var button = document.querySelector('#personagem-section .mini-button');
+            if (historyDiv.style.display === 'none' || historyDiv.style.display === '') {
+                historyDiv.style.display = 'block';
+                button.setAttribute('aria-expanded', 'true');
+            } else {
+                historyDiv.style.display = 'none';
+                button.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        function toggleWeaponHistory() {
+            var historyDiv = document.getElementById('weapon-history');
+            var button = document.querySelector('#arma-section .mini-button');
+            if (historyDiv.style.display === 'none' || historyDiv.style.display === '') {
+                historyDiv.style.display = 'block';
+                button.setAttribute('aria-expanded', 'true');
+            } else {
+                historyDiv.style.display = 'none';
+                button.setAttribute('aria-expanded', 'false');
+            }
+        }
+    </script>
+</body>
+</html>
+
