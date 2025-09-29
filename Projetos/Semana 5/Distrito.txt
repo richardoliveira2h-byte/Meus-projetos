@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cidade do Espantalho</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+      box-sizing: border-box;
+    }
+
+    /* Paleta baseada na imagem medieval */
+    :root {
+      --cor-pedra: #d1b17a;
+      --cor-pedra-clara: #f3e6cc;
+      --cor-telhado: #c56a45;
+      --cor-telhado-escuro: #a3452f;
+      --cor-verde: #486b3c;
+      --cor-ceu: #5da3d3;
+      --cor-ceu-claro: #87c5e0;
+      --cor-escuro: #2e2e2e;
+      --glass-border: rgba(255,255,255,0.06);
+    }
+
+    html, body { height: 100%; margin: 0; }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color: var(--cor-escuro);
+    }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1200;
+      background: rgba(12,12,12,0.2);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    header .left { display: flex; align-items: center; gap: 12px; }
+    header .nav { display: flex; gap: 20px; align-items: center; }
+    header .nav a {
+      color: #fff; text-decoration: none; font-weight: 600;
+      padding: 6px 10px; border-radius: 8px; transition: background 0.15s;
+    }
+    header .nav a:hover { background: rgba(255,255,255,0.04); }
+    header .nav a[aria-current="page"] { background: rgba(255,255,255,0.1); color: var(--cor-telhado); }
+
+    #btnMenu {
+      background: none; border: 0; color: #fff; font-size: 22px;
+      cursor: pointer; padding: 8px; border-radius: 8px; display: none;
+    }
+
+    .sidebar {
+      position: fixed; top: 80px; left: 0; width: 78%; max-width: 320px; bottom: 0;
+      z-index: 1300;
+      background: linear-gradient(180deg, rgba(12,12,12,0.14), rgba(12,12,12,0.08));
+      backdrop-filter: blur(8px);
+      transform: translateX(-110%);
+      transition: transform 0.28s ease;
+      border-right: 1px solid var(--glass-border);
+      padding: 16px; overflow: auto;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar h3 { color: #fff; margin: 6px 0 12px; font-size: 18px; }
+    .sidebar a {
+      display: flex; gap: 10px; align-items: center;
+      padding: 10px; text-decoration: none; color: #fff; border-radius: 8px;
+      margin-bottom: 6px; font-weight: 600;
+    }
+    .sidebar a:hover { background: rgba(255,255,255,0.04); }
+    .sidebar a[aria-current="page"] { background: rgba(255,255,255,0.1); color: var(--cor-telhado); }
+    .btn-close {
+      background: none; border: none; color: #fff; font-size: 18px; cursor: pointer;
+      position: absolute; top: 16px; right: 16px;
+    }
+
+    .mobile-overlay {
+      position: fixed; inset: 0; z-index: 1280; background: rgba(0,0,0,0.45);
+      opacity: 0; visibility: hidden; transition: opacity 0.2s;
+    }
+    .mobile-overlay.show { opacity: 1; visibility: visible; }
+
+    .acessibilidade-btn {
+      position: fixed; bottom: 20px; right: 20px;
+      background: var(--cor-telhado); color: var(--cor-pedra-clara);
+      border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 26px;
+      cursor: pointer; z-index: 2000; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .painel-acessibilidade {
+      position: fixed; bottom: 90px; right: 20px; background: var(--cor-pedra);
+      border-radius: 12px; padding: 12px; display: none; flex-direction: column; gap: 10px;
+      z-index: 1999; width: 240px;
+    }
+    .painel-acessibilidade.active { display: flex; }
+    .painel-acessibilidade button {
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      background: var(--cor-pedra-clara);
+      color: #000;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .painel-acessibilidade button:hover {
+      background: #e6d48f;
+      transform: scale(1.03);
+    }
+
+    @media (max-width: 768px) {
+      header .nav { display: none; }
+      #btnMenu { display: inline-flex; }
+      .main { margin-top: 100px; }
+    }
+
+    @media (min-width: 769px) {
+      .sidebar { display: none !important; }
+      .mobile-overlay { display: none; }
+      #btnMenu { display: none; }
+      header .nav { display: flex; }
+    }
+
+    @supports not (backdrop-filter: blur(6px)) {
+      header { background: rgba(12,12,12,0.5); }
+      .sidebar { background: rgba(12,12,12,0.5); }
+    }
+
+    .aventureiro-card img {
+      width: 264px;
+      height: 264px;
+      object-fit: contain;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .aventureiro-card img:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="bg-[var(--cor-pedra-clara)] text-[var(--cor-escuro)] font-sans">
+
+  <!-- NAVBAR -->
+  <header>
+    <div class="left">
+      <button id="btnMenu" aria-label="Abrir menu móvel">☰</button>
+      <h1 class="text-2xl font-bold text-white">Cidade do Espantalho</h1>
+    </div>
+    <nav class="nav" aria-label="Navegação principal">
+      <a href="prefeitura.html">Prefeitura</a>
+      <a href="casa_da_moeda.html">Casa da moeda</a>
+      <a href="jornal.html">Jornal</a>
+      <a href="producao.html">Produção</a>
+      <a href="mercadao.html">Mercadão</a>
+    </nav>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar" aria-hidden="true">
+    <h3>Menu</h3>
+    <button class="btn-close" aria-label="Fechar menu">✕</button>
+    <a href="prefeitura.html">Prefeitura</a>
+    <a href="casa_da_moeda.html">📋 Casa da moeda</a>
+    <a href="jornal.html">🏆 Jornal</a>
+    <a href="producao.html">🗺️ Produção</a>
+    <a href="mercadao.htm">🏆 Mercadão</a>
+  </aside>
+
+  <div id="mobileOverlay" class="mobile-overlay" aria-hidden="true"></div>
+
+  <!-- HERO -->
+  <section class="h-screen w-full relative">
+    <img src="imagens/cidade_do_espantalho.png" alt="Cidade do Espantalho" class="w-full h-full object-cover">
+    <div class="absolute inset-0 bg-[var(--cor-escuro)]/40"></div>
+  </section>
+
+  <!-- AVENTUREIROS -->
+  <section id="aventureiros" class="py-16 bg-[var(--cor-pedra)]">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold mb-12 text-[var(--cor-escuro)]">Aventureiros</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Top Row -->
+        <div class="aventureiro-card bg-white p-6 rounded-xl shadow-lg border-t-4 border-[var(--cor-telhado)]">
+          <a href="perfil_mendes.html">
+            <img src="imagens/boneco_mendes_264.png" alt="Lucas Mendes" class="rounded-t-xl mb-4">
+          </a>
+          <p class="text-lg font-bold text-center">Lucas Mendes</p>
+        </div>
+        <div class="aventureiro-card bg-white p-6 rounded-xl shadow-lg border-t-4 border-[var(--cor-verde)]">
+          <a href="perfil-guilherme-leitao.html">
+            <img src="imagens/personagem_gui_264.png" alt="Guilherme Leitão" class="rounded-t-xl mb-4">
+          </a>
+          <p class="text-lg font-bold text-center">Guilherme Leitão</p>
+        </div>
+        <!-- Bottom Row -->
+        <div class="aventureiro-card bg-white p-6 rounded-xl shadow-lg border-t-4 border-[var(--cor-telhado)]">
+          <a href="perfil-lucas-souza.html">
+            <img src="imagens/boneco_lucas_264x264.png" alt="Lucas Souza" class="rounded-t-xl mb-4">
+          </a>
+          <p class="text-lg font-bold text-center">Lucas Souza</p>
+        </div>
+        <div class="aventureiro-card bg-white p-6 rounded-xl shadow-lg border-t-4 border-[var(--cor-verde)]">
+          <a href="perfil-raika-oliveira.html">
+            <img src="imagens/boneca_raika (1)_264x264.png" alt="Raika Oliveira" class="rounded-t-xl mb-4">
+          </a>
+          <p class="text-lg font-bold text-center">Raika Oliveira</p>
+        </div>
+      </div>
+      <!-- Richard Centered Below -->
+      <div class="mt-8 flex justify-center">
+        <div class="aventureiro-card bg-white p-6 rounded-xl shadow-lg border-t-4 border-[var(--cor-telhado)] w-full md:w-1/2">
+          <a href="perfil-richard-oliveira.html">
+            <img src="imagens/richard.boneco_264x264.png" alt="Richard Oliveira" class="rounded-t-xl mb-4">
+          </a>
+          <p class="text-lg font-bold text-center">Richard Oliveira</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSÕES -->
+  <section id="missoes" class="py-16 bg-[var(--cor-pedra)]">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-4xl font-bold mb-12 text-center text-[var(--cor-escuro)]">Missões</h2>
+      <div class="text-center mb-8 space-x-4">
+        <button id="showFinais" class="bg-[var(--cor-telhado-escuro)] text-white px-6 py-3 rounded-lg shadow hover:bg-[var(--cor-telhado)]">Missões Finais</button>
+        <button id="showPrincipais" class="bg-[var(--cor-telhado)] text-white px-6 py-3 rounded-lg shadow hover:bg-[var(--cor-telhado-escuro)]">Missões Principais</button>
+        <button id="showBonus" class="bg-[var(--cor-verde)] text-white px-6 py-3 rounded-lg shadow hover:bg-green-900">Missões Bonus</button>
+      </div>
+      <div id="quadro" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <!-- Missões Principais -->
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado)] missao-principal" data-missao="Missão semanal parte 1">
+          <div class="bg-[var(--cor-telhado)] text-white px-6 py-3 font-bold text-xl">
+            Missão semanal parte 1 — Perfil do Aventureiro
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> Todos os aventureiros</p>
+            <p class="text-gray-700">Fazer sua página de perfil. Nela deve conter: seu boneco e sua arma, suas informações e um espaço para colocar medalhas adquiridas.</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado)] missao-principal" data-missao="Artificer e Mago">
+          <div class="bg-[var(--cor-telhado)] text-white px-6 py-3 font-bold text-xl">
+            Artificer e Mago — O Arquiteto da Cidade
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 3 pessoas</p>
+            <p class="text-gray-700">Estruturar o dicionário de tabelas que define como os bancos irão funcionar. A apresentação visual deve conter todos os dicionários utilizados na cidade.</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado)] missao-principal" data-missao="Cavaleiro">
+          <div class="bg-[var(--cor-telhado)] text-white px-6 py-3 font-bold text-xl">
+            Cavaleiro — Colocando Ordem
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 4 pessoas</p>
+            <p class="text-gray-700">Garantir que todos os dados e páginas das pessoas estejam atualizados, além de implementar um meio de atualização otimizado.</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado)] missao-principal" data-missao="Mercador">
+          <div class="bg-[var(--cor-telhado)] text-white px-6 py-3 font-bold text-xl">
+            Mercador — Potência
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 1 pessoa</p>
+            <p class="text-gray-700">Obter 15 moedas nesta semana.</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado)] missao-principal" data-missao="Herói">
+          <div class="bg-[var(--cor-telhado)] text-white px-6 py-3 font-bold text-xl">
+            Herói — Inquebrável
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> Grupo do herói (até 8 pessoas)</p>
+            <p class="text-gray-700">Nenhum integrante do grupo do herói pode morrer nesta semana.</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+
+        <!-- Missões Bonus -->
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-verde)] missao-bonus" data-missao="Artificer Bonus Nossas Honras">
+          <div class="bg-[var(--cor-verde)] text-white px-6 py-3 font-bold text-xl">
+            Artificer Bonus — Nossas Honras
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 1 pessoa</p>
+            <p class="text-gray-700">Criar medalhas para todas as conquistas já obtidas: Espantalho, Rei Goblin, Aracne, Arena e os 3 desafios da semana passada.</p>
+            <p class="text-gray-700"><strong>Limite:</strong> Até nível 3 e sem essência (nível 3 não evolui)</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-verde)] missao-bonus" data-missao="Artificer Bonus Comemoração">
+          <div class="bg-[var(--cor-verde)] text-white px-6 py-3 font-bold text-xl">
+            Artificer Bonus — Comemoração
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 1 pessoa</p>
+            <p class="text-gray-700">Criar uma tela de recompensas para os itens do chefe.</p>
+            <p class="text-gray-700"><strong>Limite:</strong> Até nível 3 ou essência (nível 3 não evolui)</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-verde)] missao-bonus" data-missao="Cavaleiro Bonus Elo dos Pedidos">
+          <div class="bg-[var(--cor-verde)] text-white px-6 py-3 font-bold text-xl">
+            Cavaleiro Bonus — Elo dos Pedidos
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> Todos que quiserem entrar na missão</p>
+            <p class="text-gray-700">Para participar, cada um deverá falar com Gustavo, que fará o sorteio dos grupos.</p>
+            <p class="text-gray-700"><strong>Limite:</strong> Até nível 3 e sem essência (nível 3 não evolui)</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-verde)] missao-bonus" data-missao="Mago Bonus Estudo Dirigido das Normas">
+          <div class="bg-[var(--cor-verde)] text-white px-6 py-3 font-bold text-xl">
+            Mago Bonus — Estudo Dirigido das Normas
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 3 pessoas</p>
+            <p class="text-gray-700">Realizar um estudo sobre as normas da ABNT e apresentar um esqueleto completo, incluindo regras de referência durante o texto e a bibliografia.</p>
+            <p class="text-gray-700"><strong>Recompensa:</strong> Pode ganhar essência</p>
+            <p class="text-gray-700"><strong>Limite:</strong> Até nível 4 ou essência (nível 4 não evolui)</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-verde)] missao-bonus" data-missao="Mago Bonus A Obra do Git">
+          <div class="bg-[var(--cor-verde)] text-white px-6 py-3 font-bold text-xl">
+            Mago Bonus — A Obra do Git
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 2 pessoas</p>
+            <p class="text-gray-700">Criar um exemplo prático, desenvolvendo novas branches e realizando merges funcionais.</p>
+            <p class="text-gray-700"><strong>Limite:</strong> Até nível 3 e sem essência (nível 3 não evolui)</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-verde)] missao-bonus" data-missao="Mercador Bonus Seu Grande Leilão">
+          <div class="bg-[var(--cor-verde)] text-white px-6 py-3 font-bold text-xl">
+            Mercador Bonus — Seu Grande Leilão
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 1 pessoa</p>
+            <p class="text-gray-700">Leiloar 1 item que alcance, no mínimo, 5 moedas.</p>
+            <p class="text-gray-700"><strong>Limite:</strong> Até nível 3 e sem essência (nível 3 não evolui)</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+
+        <!-- Missões Finais -->
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado-escuro)] missao-final" data-missao="Artificer Retrato do Chefe Final">
+          <div class="bg-[var(--cor-telhado-escuro)] text-white px-6 py-3 font-bold text-xl">
+            Artificer — Retrato do Chefe Final
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 1 pessoa</p>
+            <p class="text-gray-700">Fazer uma imagem do chefe final e colocar no site mostrando a vida e os ataques.</p>
+            <p class="text-gray-700"><strong>Recompensa:</strong> Só ganha um nível</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado-escuro)] missao-final" data-missao="Artificer Maquete do Chefe">
+          <div class="bg-[var(--cor-telhado-escuro)] text-white px-6 py-3 font-bold text-xl">
+            Artificer — Maquete do Chefe
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 1 pessoa</p>
+            <p class="text-gray-700">Fazer uma maquete do chefe.</p>
+            <p class="text-gray-700"><strong>Recompensa:</strong> Só ganha um nível</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)] rounded-2xl shadow-xl border border-[var(--cor-telhado-escuro)] missao-final" data-missao="Artificer Encarnar o Chefe">
+          <div class="bg-[var(--cor-telhado-escuro)] text-white px-6 py-3 font-bold text-xl">
+            Artificer — Encarnar o Chefe
+          </div>
+          <div class="p-8">
+            <p class="text-gray-700 mb-2"><strong>Participantes:</strong> 1 pessoa</p>
+            <p class="text-gray-700">Fazer com quem for apresentar o chefe na batalha esteja a caráter vestido como o chefe.</p>
+            <p class="text-gray-700"><strong>Recompensa:</strong> Só ganha um nível</p>
+            <ul class="participantes list-disc pl-6 text-gray-700 mt-4"></ul>
+          </div>
+        </div>
+        <div class="bg-[var(--cor-pedra-clara)]
+
+
+
+
+
+
